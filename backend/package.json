@@ -1,0 +1,26 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "patient id card for centralise healthcare ",
+  "keywords": [
+    "healthcare",
+    "card",
+    "patient",
+    "tech"
+  ],
+  "homepage": "https://github.com/SadiqDev-stack/medi-bridge-#readme",
+  "bugs": {
+    "url": "https://github.com/SadiqDev-stack/medi-bridge-/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SadiqDev-stack/medi-bridge-.git"
+  },
+  "license": "ISC",
+  "author": "sadiq",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
