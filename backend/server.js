@@ -1,9 +1,12 @@
+require('mongoose').set('bufferCommands', false);
+
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const connectDB = require('./utils/db');
 const errorHandler = require('./middlewares/error');
+const dbHandler = require('./middlewares/dbhandler');
+const { connectDB } = require('./middlewares/dbhandler');
 
 const authRoutes = require('./routes/auth.routes');
 const hospitalRoutes = require('./routes/hospital.routes');
@@ -21,24 +24,7 @@ app.use(express.json());
 const FRONTEND_DIR = path.join(__dirname, '..', 'frontend');
 app.use(express.static(FRONTEND_DIR));
 
-// ---- health check ----
-app.get('/api/health', (req, res) => res.json({ ok: true, service: 'MediBridge' }));
-
-// ---- API routes ----
-app.use('/api/auth', authRoutes);
-app.use('/api/hospitals', hospitalRoutes);
-app.use('/api/patients', patientRoutes);
-app.use('/api/records', recordRoutes);
-app.use('/api/audit', auditRoutes);
-app.use('/api/feedback', feedbackRoutes);
-app.use('/api/stats', statsRoutes);
-
-// ---- fallback to landing page for any non-API route ----
-app.get(/^\/(?!api).*/, (req, res) => {
-  res.sendFile(path.join(FRONTEND_DIR, 'index.html'));
-});
-
-// root API health
+// ---- public health (no DB required) ----
 app.get('/api', (req, res) => {
   res.json({
     ok: true,
@@ -48,7 +34,6 @@ app.get('/api', (req, res) => {
   });
 });
 
-// detailed health
 app.get('/api/health', (req, res) => {
   res.json({
     ok: true,
@@ -58,25 +43,39 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// ---- API routes (gated by dbHandler) ----
+app.use('/api/auth', dbHandler, authRoutes);
+app.use('/api/hospitals', dbHandler, hospitalRoutes);
+app.use('/api/patients', dbHandler, patientRoutes);
+app.use('/api/records', dbHandler, recordRoutes);
+app.use('/api/audit', dbHandler, auditRoutes);
+app.use('/api/feedback', dbHandler, feedbackRoutes);
+app.use('/api/stats', dbHandler, statsRoutes);
+
+// ---- fallback to landing for any non-API route ----
+app.get(/^\/(?!api).*/, (req, res) => {
+  res.sendFile(path.join(FRONTEND_DIR, 'index.html'));
+});
+
 // ---- error handler ----
 app.use(errorHandler);
 
 // ---- start ----
 const PORT = process.env.PORT || 5000;
 
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`MediBridge server running at http://localhost:${PORT}`);
+    console.log(`Frontend served from ${FRONTEND_DIR}`);
+    console.log(`API available at http://localhost:${PORT}/api`);
 
+    connectDB()
+      .then(() => console.log('MongoDB connected'))
+      .catch((err) => {
+        console.error('MongoDB connection failed:', err.message);
+        console.error('Server is running, but DB routes will fail until MongoDB is reachable.');
+      });
+  });
+}
 
-app.listen(PORT, () => {
-  console.log(`MediBridge server running at http://localhost:${PORT}`);
-  console.log(`Frontend served from ${FRONTEND_DIR}`);
-  console.log(`API available at http://localhost:${PORT}/api`);
-
-  connectDB()
-    .then(() => {
-      console.log('MongoDB connected');
-    })
-    .catch((err) => {
-      console.error('MongoDB connection failed:', err.message);
-      console.error('Server is running, but DB routes will fail until MongoDB is reachable.');
-    });
-});
+module.exports = app;

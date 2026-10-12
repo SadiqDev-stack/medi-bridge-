@@ -20,6 +20,7 @@ const state = () => {
 };
 
 async function connectDB() {
+
   if (cached.conn && mongoose.connection.readyState === 1) return cached.conn;
   if (cached.promise) return cached.promise;
 
