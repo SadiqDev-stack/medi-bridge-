@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — MediBridge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .bg-brand { background-color: #1a4b7a; }
+    .shimmer { background: linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%); background-size: 200% 100%; animation: sh 1.4s infinite; }
+    @keyframes sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .tabbtn.active { background-color: #1a4b7a; color: #fff; }
+  </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-800 min-h-screen">
+
+  <nav class="bg-white border-b border-slate-200 sticky top-0 z-20">
+    <div class="max-w-6xl mx-auto px-5 py-3 flex justify-between items-center gap-3">
+      <div class="flex items-center gap-2">
+        <img src="/assets/logo.png" alt="" class="w-9 h-9 object-contain rounded-lg bg-white p-1 shadow-sm">
+        <b>MediBridge</b>
+        <span class="hidden sm:inline text-xs font-bold text-[#1a4b7a] bg-blue-50 px-2 py-1 rounded-full uppercase tracking-wider">
+          <i class="fa-solid fa-shield-halved mr-1"></i>Admin
+        </span>
+      </div>
+      <button id="logoutBtn" class="px-4 py-2 bg-slate-900 text-white rounded-full text-sm font-semibold hover:bg-slate-800">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i><span class="hidden sm:inline ml-1">Logout</span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-5 py-8">
+
+    <!-- Stats -->
+    <div id="stats" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      ${''}
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex flex-wrap gap-2 mt-8">
+      <button class="tabbtn active px-4 py-2 rounded-full text-sm font-semibold border border-slate-200" data-tab="pending">
+        <i class="fa-solid fa-hourglass-half mr-1"></i>Pending
+      </button>
+      <button class="tabbtn px-4 py-2 rounded-full text-sm font-semibold border border-slate-200" data-tab="hospitals">
+        <i class="fa-solid fa-hospital mr-1"></i>Hospitals
+      </button>
+      <button class="tabbtn px-4 py-2 rounded-full text-sm font-semibold border border-slate-200" data-tab="audit">
+        <i class="fa-solid fa-clipboard-list mr-1"></i>Audit Logs
+      </button>
+      <button class="tabbtn px-4 py-2 rounded-full text-sm font-semibold border border-slate-200" data-tab="feedback">
+        <i class="fa-solid fa-comment-dots mr-1"></i>Feedback
+      </button>
+    </div>
+
+    <div id="panel" class="mt-5"></div>
+  </main>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    if (!requireAdmin()) throw new Error('redirect');
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      logout();
+      window.location.href = '/pages/admin-login.html';
+    });
+
+    const statsEl = document.getElementById('stats');
+    const panel = document.getElementById('panel');
+    let currentTab = 'pending';
+
+    function statsSkeleton() {
+      statsEl.innerHTML = Array(4).fill(`
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+          <div class="h-4 w-1/2 shimmer rounded mb-3"></div>
+          <div class="h-8 w-1/3 shimmer rounded"></div>
+        </div>`).join('');
+    }
+
+    function panelSkeleton() {
+      panel.innerHTML = `
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+          <div class="h-5 w-1/4 shimmer rounded mb-4"></div>
+          <div class="h-10 shimmer rounded mb-2"></div>
+          <div class="h-10 shimmer rounded mb-2"></div>
+          <div class="h-10 shimmer rounded mb-2"></div>
+        </div>`;
+    }
+
+    function renderStats(s) {
+      const cards = [
+        { label: 'Hospitals', value: s.hospitals?.total ?? 0, icon: 'fa-hospital', color: 'text-blue-600 bg-blue-50' },
+        { label: 'Pending',   value: s.hospitals?.pending ?? 0, icon: 'fa-hourglass-half', color: 'text-amber-600 bg-amber-50' },
+        { label: 'Patients',  value: s.patients ?? 0, icon: 'fa-users', color: 'text-emerald-600 bg-emerald-50' },
+        { label: 'Records',   value: s.records ?? 0, icon: 'fa-file-medical', color: 'text-purple-600 bg-purple-50' },
+      ];
+      statsEl.innerHTML = cards.map(c => `
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl ${c.color} flex items-center justify-center">
+              <i class="fa-solid ${c.icon}"></i>
+            </div>
+            <div class="text-xs text-slate-400 uppercase tracking-wider">${c.label}</div>
+          </div>
+          <div class="mt-4 text-3xl font-black">${c.value}</div>
+        </div>`).join('');
+    }
+
+    async function loadStats() {
+      statsSkeleton();
+      try { renderStats(await api.stats()); }
+      catch (err) { statsEl.innerHTML = `<div class="col-span-full alert alert-danger">${escapeHtml(err.message)}</div>`; }
+    }
+
+    async function loadTab(tab) {
+      currentTab = tab;
+      panelSkeleton();
+      try {
+        if (tab === 'pending')    return renderHospitals(await api.pendingHospitals(), true);
+        if (tab === 'hospitals')  return renderHospitals(await api.allHospitals(), false);
+        if (tab === 'audit')      return renderAudit(await api.auditLogs());
+        if (tab === 'feedback')   return renderFeedback(await api.feedbacks());
+      } catch (err) {
+        panel.innerHTML = `<div class="alert alert-danger">${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    function renderHospitals(list, showActions) {
+      if (!list.length) {
+        panel.innerHTML = `<div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-10 text-center text-slate-500">
+          <i class="fa-solid fa-hospital text-3xl text-slate-300"></i>
+          <div class="mt-3">No hospitals to show.</div></div>`;
+        return;
+      }
+      panel.innerHTML = `
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-50 text-slate-500 uppercase text-xs">
+                <tr>
+                  <th class="text-left p-4">Name</th>
+                  <th class="text-left p-4">Email</th>
+                  <th class="text-left p-4">Phone</th>
+                  <th class="text-left p-4">License</th>
+                  <th class="text-left p-4">Status</th>
+                  ${showActions ? '<th class="text-right p-4">Actions</th>' : ''}
+                </tr>
+              </thead>
+              <tbody>
+                ${list.map(h => `
+                  <tr class="border-t border-slate-100 hover:bg-slate-50/60">
+                    <td class="p-4 font-semibold">${escapeHtml(h.name)}</td>
+                    <td class="p-4 text-slate-600">${escapeHtml(h.email)}</td>
+                    <td class="p-4 text-slate-600">${escapeHtml(h.phone || '—')}</td>
+                    <td class="p-4 text-slate-600 font-mono text-xs">${escapeHtml(h.licenseNumber || '—')}</td>
+                    <td class="p-4"><span class="badge badge-${h.status}">${h.status}</span></td>
+                    ${showActions ? `<td class="p-4 text-right">
+                      <button data-approve="${h._id}" class="bg-emerald-600 text-white px-3 py-1.5 rounded-full text-xs font-semibold hover:bg-emerald-700">
+                        <i class="fa-solid fa-check mr-1"></i>Approve
+                      </button>
+                      <button data-reject="${h._id}" class="bg-red-600 text-white px-3 py-1.5 rounded-full text-xs font-semibold hover:bg-red-700 ml-1">
+                        <i class="fa-solid fa-xmark mr-1"></i>Reject
+                      </button>
+                    </td>` : ''}
+                  </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>`;
+
+      panel.querySelectorAll('[data-approve]').forEach(b => b.addEventListener('click', () => decide(b.dataset.approve, 'approve')));
+      panel.querySelectorAll('[data-reject]').forEach(b => b.addEventListener('click', () => decide(b.dataset.reject, 'reject')));
+    }
+
+    async function decide(id, action) {
+      try {
+        if (action === 'approve') await api.approveHospital(id);
+        else await api.rejectHospital(id);
+        toast(`Hospital ${action}d`, 'success');
+        loadStats();
+        loadTab('pending');
+      } catch (err) { toast(err.message, 'danger'); }
+    }
+
+    function renderAudit(list) {
+      if (!list.length) {
+        panel.innerHTML = `<div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-10 text-center text-slate-500">
+          <i class="fa-solid fa-clipboard-list text-3xl text-slate-300"></i>
+          <div class="mt-3">No audit entries yet.</div></div>`;
+        return;
+      }
+      panel.innerHTML = `
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-50 text-slate-500 uppercase text-xs">
+                <tr>
+                  <th class="text-left p-4">Time</th>
+                  <th class="text-left p-4">Actor</th>
+                  <th class="text-left p-4">Action</th>
+                  <th class="text-left p-4">Target</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${list.map(l => `
+                  <tr class="border-t border-slate-100 hover:bg-slate-50/60">
+                    <td class="p-4 text-slate-500 text-xs">${formatDate(l.createdAt)}</td>
+                    <td class="p-4">${escapeHtml(l.actor || l.actorType || '—')}</td>
+                    <td class="p-4 font-semibold">${escapeHtml(l.action)}</td>
+                    <td class="p-4 text-slate-500 font-mono text-xs">${escapeHtml(l.targetId || '—')}</td>
+                  </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>`;
+    }
+
+    function renderFeedback(list) {
+      if (!list.length) {
+        panel.innerHTML = `<div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-10 text-center text-slate-500">
+          <i class="fa-solid fa-comment-dots text-3xl text-slate-300"></i>
+          <div class="mt-3">No feedback yet.</div></div>`;
+        return;
+      }
+      panel.innerHTML = `
+        <div class="grid gap-4">
+          ${list.map(f => `
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+              <div class="flex justify-between items-start gap-3">
+                <div>
+                  <div class="font-bold">${escapeHtml(f.subject)}</div>
+                  <div class="text-xs text-slate-400 mt-0.5">
+                    ${escapeHtml(f.hospital?.name || '—')} • ${formatDate(f.createdAt)}
+                  </div>
+                </div>
+                <span class="badge badge-info">${escapeHtml(f.type)}</span>
+              </div>
+              <p class="mt-3 text-sm text-slate-600 whitespace-pre-wrap">${escapeHtml(f.message)}</p>
+            </div>`).join('')}
+        </div>`;
+    }
+
+    document.querySelectorAll('.tabbtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tabbtn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        loadTab(btn.dataset.tab);
+      });
+    });
+
+    loadStats();
+    loadTab('pending');
+  </script>
+</body>
+</html>

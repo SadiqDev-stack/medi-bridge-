@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediBridge — Shared Patient Records</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .brand { color: #1a4b7a; }
+    .bg-brand { background-color: #1a4b7a; }
+  </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-800">
+
+  <!-- NAV -->
+  <nav class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
+    <a href="/pages/landing.html" class="flex gap-3 items-center">
+      <img src="/assets/logo.png" alt="MediBridge" class="w-10 h-10 object-contain rounded-xl bg-white p-1 shadow-sm">
+      <b class="text-xl tracking-tight">MediBridge</b>
+    </a>
+    <div class="flex gap-3 items-center">
+      <a href="/pages/admin-login.html" class="hidden sm:inline text-sm text-slate-500 hover:text-slate-900">Admin</a>
+      <a href="/pages/login.html" class="px-5 py-2.5 bg-slate-900 text-white rounded-full font-semibold text-sm hover:bg-slate-800">Hospital Login</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="max-w-7xl mx-auto px-6 pt-10 pb-16 grid md:grid-cols-2 gap-12 items-center">
+    <div>
+      <span class="inline-block text-xs font-bold tracking-widest text-[#1a4b7a] bg-blue-50 px-3 py-1 rounded-full uppercase">
+        MVP · Shared Health Records
+      </span>
+      <h1 class="mt-5 text-4xl md:text-5xl font-black leading-[1.1]">
+        One Patient.<br>
+        <span class="brand">One Health ID.</span><br>
+        Every Hospital.
+      </h1>
+      <p class="mt-6 text-slate-500 text-lg leading-relaxed">
+        MediBridge gives every patient a single, unique Health ID. Approved hospitals can look up that ID,
+        view the patient's full medical history from other participating facilities, and add new encounters —
+        with every access logged.
+      </p>
+
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="/pages/register-hospital.html" class="px-6 py-3.5 bg-brand text-white rounded-2xl font-semibold hover:opacity-90">
+          Register your Hospital
+        </a>
+        <a href="/pages/login.html" class="px-6 py-3.5 bg-white border border-slate-200 rounded-2xl font-semibold hover:bg-slate-50">
+          Hospital Login
+        </a>
+      </div>
+
+      <div class="mt-8 flex flex-wrap gap-6 text-sm text-slate-500">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-green-500"></span> Auto-generated Health ID
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-green-500"></span> Cross-hospital access
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-green-500"></span> Full audit trail
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview card (static visual — no fake data, just layout) -->
+    <div class="bg-white rounded-[2rem] shadow-2xl p-3">
+      <div class="bg-slate-900 rounded-[1.5rem] p-6 text-white">
+        <div class="flex justify-between items-center">
+          <div class="flex gap-2 items-center">
+            <img src="/assets/logo.png" alt="" class="w-8 h-8 object-contain rounded-lg bg-white p-1">
+            <span class="text-slate-400 text-xs tracking-widest">HEALTH ID</span>
+          </div>
+          <span class="bg-green-500 text-[10px] px-2 py-1 rounded-full font-bold">VERIFIED</span>
+        </div>
+
+        <div class="mt-4 text-3xl font-black tracking-tight">MB-2025-000001</div>
+        <div class="mt-2 text-slate-400 text-sm">Unique per patient · Generated on registration</div>
+
+        <div class="mt-6 grid grid-cols-2 gap-3 text-sm">
+          <div class="bg-slate-800 p-3 rounded-xl">
+            <div class="text-slate-400 text-xs">Records</div>
+            <b class="text-xl">Linked</b>
+          </div>
+          <div class="bg-slate-800 p-3 rounded-xl">
+            <div class="text-slate-400 text-xs">Audit Logs</div>
+            <b class="text-xl">Enabled</b>
+          </div>
+        </div>
+
+        <div class="mt-6 text-xs text-slate-400 leading-relaxed">
+          Search any Health ID from an approved hospital to view the patient's full encounter
+          history across the network.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="max-w-7xl mx-auto px-6 pb-20">
+    <h2 class="text-2xl md:text-3xl font-black mb-2">Built for continuity of care</h2>
+    <p class="text-slate-500 mb-8">Everything a hospital needs to share and retrieve patient records — nothing more.</p>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#1a4b7a] flex items-center justify-center font-black">1</div>
+        <h3 class="mt-4 font-bold">Hospital Registration</h3>
+        <p class="mt-1 text-sm text-slate-500">Hospitals sign up and await approval from the platform admin.</p>
+      </div>
+
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#1a4b7a] flex items-center justify-center font-black">2</div>
+        <h3 class="mt-4 font-bold">Admin Approval</h3>
+        <p class="mt-1 text-sm text-slate-500">Only approved hospitals can log in and access the shared network.</p>
+      </div>
+
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#1a4b7a] flex items-center justify-center font-black">3</div>
+        <h3 class="mt-4 font-bold">Patient Registration</h3>
+        <p class="mt-1 text-sm text-slate-500">Hospitals register patients and get a unique MediBridge Health ID instantly.</p>
+      </div>
+
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#1a4b7a] flex items-center justify-center font-black">4</div>
+        <h3 class="mt-4 font-bold">Patient Search</h3>
+        <p class="mt-1 text-sm text-slate-500">Look up any patient by their Health ID across participating hospitals.</p>
+      </div>
+
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#1a4b7a] flex items-center justify-center font-black">5</div>
+        <h3 class="mt-4 font-bold">Medical Encounters</h3>
+        <p class="mt-1 text-sm text-slate-500">Add date, reason, diagnosis, treatment, and notes to the patient's timeline.</p>
+      </div>
+
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#1a4b7a] flex items-center justify-center font-black">6</div>
+        <h3 class="mt-4 font-bold">Audit & Feedback</h3>
+        <p class="mt-1 text-sm text-slate-500">Every access is logged. Hospitals can send feedback and bug reports.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORKFLOW -->
+  <section class="max-w-7xl mx-auto px-6 pb-20">
+    <div class="bg-slate-900 text-white rounded-[2rem] p-10 md:p-14">
+      <h2 class="text-2xl md:text-3xl font-black">How it works</h2>
+      <p class="text-slate-400 mt-2">From registration to cross-hospital record sharing in five steps.</p>
+
+      <ol class="mt-8 grid md:grid-cols-5 gap-4">
+        <li class="bg-slate-800/60 rounded-2xl p-5">
+          <div class="text-slate-400 text-xs font-bold">STEP 1</div>
+          <div class="mt-2 font-bold">Hospital registers</div>
+        </li>
+        <li class="bg-slate-800/60 rounded-2xl p-5">
+          <div class="text-slate-400 text-xs font-bold">STEP 2</div>
+          <div class="mt-2 font-bold">Admin approves</div>
+        </li>
+        <li class="bg-slate-800/60 rounded-2xl p-5">
+          <div class="text-slate-400 text-xs font-bold">STEP 3</div>
+          <div class="mt-2 font-bold">Register patient → Health ID</div>
+        </li>
+        <li class="bg-slate-800/60 rounded-2xl p-5">
+          <div class="text-slate-400 text-xs font-bold">STEP 4</div>
+          <div class="mt-2 font-bold">Another hospital searches by ID</div>
+        </li>
+        <li class="bg-slate-800/60 rounded-2xl p-5">
+          <div class="text-slate-400 text-xs font-bold">STEP 5</div>
+          <div class="mt-2 font-bold">View + add encounters</div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="max-w-7xl mx-auto px-6 pb-20">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-10 text-center">
+      <h2 class="text-2xl md:text-3xl font-black">Ready to connect your hospital?</h2>
+      <p class="text-slate-500 mt-2">Register in under a minute. Once approved, you're on the network.</p>
+      <div class="mt-6 flex flex-wrap justify-center gap-3">
+        <a href="/pages/register-hospital.html" class="px-6 py-3.5 bg-brand text-white rounded-2xl font-semibold hover:opacity-90">
+          Register Hospital
+        </a>
+        <a href="/pages/login.html" class="px-6 py-3.5 bg-white border border-slate-200 rounded-2xl font-semibold hover:bg-slate-50">
+          I already have an account
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-200">
+    <div class="max-w-7xl mx-auto px-6 py-8 flex flex-col sm:flex-row justify-between items-center gap-3 text-sm text-slate-500">
+      <div class="flex gap-2 items-center">
+        <img src="/assets/logo.png" alt="" class="w-6 h-6 object-contain">
+        <span>MediBridge MVP</span>
+      </div>
+      <div class="flex gap-5">
+        <a href="/pages/register-hospital.html" class="hover:text-slate-900">Register</a>
+        <a href="/pages/login.html" class="hover:text-slate-900">Hospital Login</a>
+        <a href="/pages/admin-login.html" class="hover:text-slate-900">Admin</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

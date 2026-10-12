@@ -1,8 +1,12 @@
 const mongoose = require('mongoose');
-const Counter = mongoose.connection.model('Counter', new mongoose.Schema({
+
+const counterSchema = new mongoose.Schema({
   _id: String,
   seq: { type: Number, default: 0 },
-}));
+});
+
+const Counter = mongoose.models.medibridge_Counter
+  || mongoose.model('medibridge_Counter', counterSchema);
 
 const generateHealthId = async () => {
   const year = new Date().getFullYear();

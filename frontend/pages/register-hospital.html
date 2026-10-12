@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register Hospital — MediBridge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .brand { color: #1a4b7a; }
+    .bg-brand { background-color: #1a4b7a; }
+    .shimmer { background: linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%); background-size: 200% 100%; animation: sh 1.4s infinite; }
+    @keyframes sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-800 min-h-screen flex items-center justify-center p-5">
+
+  <div class="w-full max-w-2xl">
+    <a href="/pages/landing.html" class="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 mb-4">
+      <i class="fa-solid fa-arrow-left"></i> Back to home
+    </a>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
+      <div class="flex items-center gap-3 mb-2">
+        <img src="/assets/logo.png" alt="MediBridge" class="w-11 h-11 object-contain rounded-xl bg-white p-1 shadow-sm">
+        <b class="text-xl">MediBridge</b>
+      </div>
+      <h1 class="text-2xl font-black mt-4">Register your Hospital</h1>
+      <p class="text-slate-500 text-sm mt-1">Submit your details. An admin will review and approve your account.</p>
+
+      <div id="alert" class="mt-5"></div>
+
+      <form id="form" class="mt-6 grid sm:grid-cols-2 gap-4">
+        <div class="sm:col-span-2">
+          <label class="text-sm font-semibold">Hospital Name</label>
+          <input name="name" required class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400">
+        </div>
+        <div>
+          <label class="text-sm font-semibold">Email</label>
+          <input name="email" type="email" required class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400">
+        </div>
+        <div>
+          <label class="text-sm font-semibold">Phone</label>
+          <input name="phone" required class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400">
+        </div>
+        <div class="sm:col-span-2">
+          <label class="text-sm font-semibold">Address</label>
+          <input name="address" required class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400">
+        </div>
+        <div>
+          <label class="text-sm font-semibold">License Number</label>
+          <input name="licenseNumber" required class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400">
+        </div>
+        <div>
+          <label class="text-sm font-semibold">Password</label>
+          <input name="password" type="password" required minlength="6" class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400">
+        </div>
+
+        <div class="sm:col-span-2 mt-2">
+          <button type="submit" id="submitBtn"
+            class="w-full bg-brand text-white p-3.5 rounded-xl font-semibold hover:opacity-90 disabled:opacity-60">
+            Submit for Approval
+          </button>
+        </div>
+      </form>
+
+      <p class="text-sm text-slate-500 mt-5 text-center">
+        Already registered? <a href="/pages/login.html" class="text-[#1a4b7a] font-semibold">Login here</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    const form = document.getElementById('form');
+    const btn = document.getElementById('submitBtn');
+    const alertBox = document.getElementById('alert');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearAlert(alertBox);
+      setLoading(btn, true);
+      const payload = Object.fromEntries(new FormData(form).entries());
+      try {
+        const res = await api.registerHospital(payload);
+        showAlert(alertBox, `<i class="fa-solid fa-circle-check mr-2"></i>${res.message}`, 'success');
+        form.reset();
+      } catch (err) {
+        showAlert(alertBox, `<i class="fa-solid fa-triangle-exclamation mr-2"></i>${err.message}`, 'danger');
+      } finally {
+        setLoading(btn, false, 'Submit for Approval');
+      }
+    });
+  </script>
+</body>
+</html>

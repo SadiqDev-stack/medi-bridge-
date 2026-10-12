@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback — MediBridge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .bg-brand { background-color: #1a4b7a; }
+  </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-800 min-h-screen">
+
+  <nav class="bg-white border-b border-slate-200">
+    <div class="max-w-2xl mx-auto px-5 py-3 flex justify-between items-center">
+      <a href="/pages/dashboard.html" class="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900">
+        <i class="fa-solid fa-arrow-left"></i> Dashboard
+      </a>
+      <b class="text-sm">Feedback</b>
+      <div class="w-6"></div>
+    </div>
+  </nav>
+
+  <main class="max-w-2xl mx-auto px-5 py-8">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-7">
+      <h1 class="text-xl font-black">Send us feedback</h1>
+      <p class="text-slate-500 text-sm mt-1">Report a bug or suggest an improvement. We read every message.</p>
+
+      <div id="alert" class="mt-5"></div>
+
+      <form id="form" class="mt-6 space-y-4">
+        <div>
+          <label class="text-sm font-semibold">Type</label>
+          <select name="type" class="mt-1 w-full p-3 border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-200">
+            <option value="feedback">Feedback</option>
+            <option value="suggestion">Suggestion</option>
+            <option value="bug">Bug report</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-sm font-semibold">Subject</label>
+          <input name="subject" required class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200">
+        </div>
+        <div>
+          <label class="text-sm font-semibold">Message</label>
+          <textarea name="message" rows="6" required class="mt-1 w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200"></textarea>
+        </div>
+        <button type="submit" id="submitBtn"
+          class="w-full bg-brand text-white p-3.5 rounded-xl font-semibold hover:opacity-90 disabled:opacity-60">
+          <i class="fa-solid fa-paper-plane mr-2"></i>Send
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    if (!requireHospital()) throw new Error('redirect');
+    const form = document.getElementById('form');
+    const btn = document.getElementById('submitBtn');
+    const alertBox = document.getElementById('alert');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearAlert(alertBox);
+      setLoading(btn, true);
+      try {
+        const payload = Object.fromEntries(new FormData(form).entries());
+        await api.submitFeedback(payload);
+        showAlert(alertBox, '<i class="fa-solid fa-circle-check mr-2"></i>Thank you — your feedback was submitted.', 'success');
+        form.reset();
+      } catch (err) {
+        showAlert(alertBox, `<i class="fa-solid fa-triangle-exclamation mr-2"></i>${err.message}`, 'danger');
+      } finally {
+        setLoading(btn, false, '<i class="fa-solid fa-paper-plane mr-2"></i>Send');
+      }
+    });
+  </script>
+</body>
+</html>

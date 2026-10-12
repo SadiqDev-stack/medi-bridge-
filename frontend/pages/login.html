@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hospital Login — MediBridge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .brand { color: #1a4b7a; }
+    .bg-brand { background-color: #1a4b7a; }
+  </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-800 min-h-screen flex items-center justify-center p-5">
+
+  <div class="w-full max-w-md">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
+      <div class="flex items-center justify-center gap-3 mb-6">
+        <img src="/assets/logo.png" alt="MediBridge" class="w-12 h-12 object-contain rounded-xl bg-white p-1 shadow-sm">
+        <b class="text-2xl">MediBridge</b>
+      </div>
+
+      <h1 class="text-2xl font-black text-center">Hospital Login</h1>
+      <p class="text-slate-500 text-sm text-center mt-1">Access the shared patient record network.</p>
+
+      <div id="alert" class="mt-5"></div>
+
+      <form id="form" class="mt-6 space-y-4">
+        <div>
+          <label class="text-sm font-semibold">Email</label>
+          <input name="email" type="email" required
+            class="mt-1 w-full p-3.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400">
+        </div>
+        <div>
+          <label class="text-sm font-semibold">Password</label>
+          <input name="password" type="password" required
+            class="mt-1 w-full p-3.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400">
+        </div>
+        <button type="submit" id="submitBtn"
+          class="w-full bg-brand text-white p-3.5 rounded-xl font-semibold hover:opacity-90 disabled:opacity-60">
+          <i class="fa-solid fa-right-to-bracket mr-2"></i>Login
+        </button>
+      </form>
+
+      <div class="mt-6 text-sm text-center text-slate-500">
+        New hospital? <a href="/pages/register-hospital.html" class="text-[#1a4b7a] font-semibold">Register here</a>
+      </div>
+      <div class="mt-2 text-xs text-center">
+        <a href="/pages/admin-login.html" class="text-slate-400 hover:text-slate-700">Platform admin login</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    if (isHospitalLoggedIn()) window.location.replace('/pages/dashboard.html');
+
+    const form = document.getElementById('form');
+    const btn = document.getElementById('submitBtn');
+    const alertBox = document.getElementById('alert');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearAlert(alertBox);
+      setLoading(btn, true);
+      const payload = Object.fromEntries(new FormData(form).entries());
+      try {
+        const res = await api.loginHospital(payload);
+        saveHospitalSession(res.token, res.hospital);
+        toast('Login successful', 'success');
+        setTimeout(() => window.location.href = '/pages/dashboard.html', 400);
+      } catch (err) {
+        showAlert(alertBox, `<i class="fa-solid fa-triangle-exclamation mr-2"></i>${err.message}`, 'danger');
+        setLoading(btn, false, '<i class="fa-solid fa-right-to-bracket mr-2"></i>Login');
+      }
+    });
+  </script>
+</body>
+</html>
