@@ -6,6 +6,9 @@ mongoose.set('bufferCommands', false);
 let cached = global.__mb_mongo;
 if (!cached) cached = global.__mb_mongo = { conn: null, promise: null };
 
+
+
+
 const state = () => {
   switch (mongoose.connection.readyState) {
     case 1: return 'connected';
