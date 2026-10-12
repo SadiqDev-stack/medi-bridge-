@@ -8,4 +8,4 @@ const feedbackSchema = new mongoose.Schema({
   status: { type: String, enum: ['open', 'reviewed'], default: 'open' },
 }, { timestamps: true });
 
-module.exports = mongoose.model('Feedback', feedbackSchema);
+module.exports = mongoose.model('medibridge_Feedback', feedbackSchema);

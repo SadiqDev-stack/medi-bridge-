@@ -11,4 +11,4 @@ const recordSchema = new mongoose.Schema({
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Hospital', required: true },
 }, { timestamps: true });
 
-module.exports = mongoose.model('Record', recordSchema);
+module.exports = mongoose.model('medibridge_Record', recordSchema);

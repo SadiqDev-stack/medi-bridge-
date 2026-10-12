@@ -11,4 +11,4 @@ const hospitalSchema = new mongoose.Schema({
   role: { type: String, default: 'hospital' },
 }, { timestamps: true });
 
-module.exports = mongoose.model('Hospital', hospitalSchema);
+module.exports = mongoose.model('medibridge_Hospital', hospitalSchema);

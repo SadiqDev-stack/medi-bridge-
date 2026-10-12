@@ -9,4 +9,4 @@ const auditLogSchema = new mongoose.Schema({
   meta: { type: Object },
 }, { timestamps: true });
 
-module.exports = mongoose.model('AuditLog', auditLogSchema);
+module.exports = mongoose.model('medibridge_AuditLog', auditLogSchema);
